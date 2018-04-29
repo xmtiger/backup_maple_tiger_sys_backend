@@ -17,4 +17,30 @@ public class Phone extends BaseEntity {
 	
 	@Column(name = "phone_number")
 	protected String phone_number;
+
+	public String getPhone_type() {
+		return phone_type;
+	}
+
+	public void setPhone_type(String phone_type) {
+		this.phone_type = phone_type;
+	}
+
+	public String getArea_code() {
+		return area_code;
+	}
+
+	public void setArea_code(String area_code) {
+		this.area_code = area_code;
+	}
+
+	public String getPhone_number() {
+		return phone_number;
+	}
+
+	public void setPhone_number(String phone_number) {
+		this.phone_number = phone_number;
+	}
+	
+	
 }

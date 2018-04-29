@@ -32,4 +32,36 @@ public class History extends BaseEntity {
 	
 	@Column(name = "description")
 	protected String description;
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getBegin_time() {
+		return begin_time;
+	}
+
+	public void setBegin_time(Date begin_time) {
+		this.begin_time = begin_time;
+	}
+
+	public Date getEnd_time() {
+		return end_time;
+	}
+
+	public void setEnd_time(Date end_time) {
+		this.end_time = end_time;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

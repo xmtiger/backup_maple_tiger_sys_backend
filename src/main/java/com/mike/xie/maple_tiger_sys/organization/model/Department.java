@@ -1,7 +1,6 @@
 package com.mike.xie.maple_tiger_sys.organization.model;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -14,14 +13,18 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.mike.xie.maple_tiger_sys.model.Familyable;
 
 import com.mike.xie.maple_tiger_sys.model.NamedEntity;
-
+import com.mike.xie.maple_tiger_sys.organization.rest.JsonCustomDepartmentDeserializer;
+import com.mike.xie.maple_tiger_sys.organization.rest.JsonCustomDepartmentSerializer;
 
 @Entity
 @Table(name = "departments")
+@JsonSerialize(using = JsonCustomDepartmentSerializer.class)
+@JsonDeserialize(using = JsonCustomDepartmentDeserializer.class)
 public class Department extends NamedEntity implements Comparable<Department>, Familyable<Department> {
 	
 	/*@Column(name = "begin_time")
@@ -38,20 +41,21 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     private Date end_time;*/
 	
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-	private List<Department_History> histories;
+	private Set<Department_History> histories;
 	
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-	private List<Department_Address> addresses;
+	private Set<Department_Address> addresses;
 	
 	//mappedBy means the class field name of the class 'Employee'
-    @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	//The fetch type shall be lazy in production version.
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department", fetch = FetchType.EAGER)
     private Set<Employee> employees;
         
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER) // the "owner" is the field "owner" of the class Phone
-    private List<Department_Phone> phones;
+    private Set<Department_Phone> phones;
     
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-    private List<Department_Email> emails;
+    private Set<Department_Email> emails;
     
   //The following fields are for department relationship
     @ManyToOne(fetch = FetchType.EAGER)
@@ -67,41 +71,107 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     private Set<Department> children;
 
     public void addAddress(Department_Address address) {
+    	if(this.addresses == null) {
+    		this.addresses = new HashSet<Department_Address>();
+    	}
+    	
     	this.addresses.add(address);
     	if(address.getOwner() != this) {
     		address.setOwner(this);
     	}
     }
     
-    public List<Department_History> getHistories() {
+    public void removeAddress(Department_Address address) {
+    	
+    	if(address.getOwner() == this) {
+    		address.removeOwner(this);
+    	}
+    	this.addresses.remove(address);
+    }
+    
+    public void addPhone(Department_Phone phone) {
+    	if(this.phones == null) {
+    		this.phones = new HashSet<Department_Phone>();
+    	}
+    	
+    	this.phones.add(phone);
+    	if(phone.getOwner() != this) {
+    		phone.setOwner(this);
+    	}
+    }
+    
+    public void removePhone(Department_Phone phone) {
+    	if(phone.getOwner() == this) {
+    		phone.removeOwner(this);
+    	}
+    	this.phones.remove(phone);
+    }
+    
+    public void addEmail(Department_Email email) {
+    	if(this.emails == null) {
+    		this.emails = new HashSet<Department_Email>();
+    	}
+    	
+    	this.emails.add(email);
+    	if(email.getOwner() != this) {
+    		email.setOwner(this);
+    	}
+    }
+    
+    public void removeEmail(Department_Email email) {
+    	if(email.getOwner() == this) {
+    		email.removeOwner(this);
+    	}
+    	this.emails.remove(email);
+    }
+    
+    public void addHistory(Department_History history) {
+    	if(this.histories == null) {
+    		this.histories = new HashSet<Department_History>();
+    	}
+    	
+    	this.histories.add(history);
+    	if(history.getOwner() != this) {
+    		history.setOwner(this);
+    	}
+    }
+    
+    public void removeHistory(Department_History history) {
+    	if(history.getOwner() == this) {
+    		history.removeOwner(this);
+    	}
+    	this.histories.remove(history);
+    }
+    
+    public Set<Department_History> getHistories() {
 		return histories;
 	}
 
-	public void setHistories(List<Department_History> histories) {
+	public void setHistories(Set<Department_History> histories) {
 		this.histories = histories;
 	}
 
-	public List<Department_Address> getAddresses() {
+	public Set<Department_Address> getAddresses() {
 		return addresses;
 	}
 
-	public void setAddresses(List<Department_Address> addresses) {
+	public void setAddresses(Set<Department_Address> addresses) {
 		this.addresses = addresses;
 	}
 
-	public List<Department_Phone> getPhones() {
+	public Set<Department_Phone> getPhones() {
 		return phones;
 	}
 
-	public void setPhones(List<Department_Phone> phones) {
+	public void setPhones(Set<Department_Phone> phones) {
 		this.phones = phones;
 	}
 
-	public List<Department_Email> getEmails() {
+	public Set<Department_Email> getEmails() {
 		return emails;
 	}
 
-	public void setEmails(List<Department_Email> emails) {
+	public void setEmails(Set<Department_Email> emails) {
 		this.emails = emails;
 	}
 

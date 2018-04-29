@@ -38,6 +38,10 @@ INSERT INTO employees VALUES (1, 1, 1, 'james', '', 'Carter', '1977-09-07', 'MAL
 INSERT INTO employees VALUES (2, 2, 2, 'helen', '', 'Leary', '1978-08-16', 'FEMALE', 'ACTIVE');
 INSERT INTO employees VALUES (3, 3, 3, 'Linda', '', 'Douglas', '1982-05-31', 'FEMALE', 'ACTIVE');
 
+INSERT INTO employee_histories VALUES (1, 1, 'ACTIVE', '2003-09-01', '1900-01-01', '');
+INSERT INTO employee_histories VALUES (2, 2, 'ACTIVE', '2006-08-01', '1900-01-01', '');
+INSERT INTO employee_histories VALUES (3, 3, 'ACTIVE', '2012-03-01', '1900-01-01', '');
+
 INSERT INTO employee_phones VALUES (1, 1, 'office', '780', '6667799');
 INSERT INTO employee_phones VALUES (2, 2, 'office', '780', '7896556');
 INSERT INTO employee_phones VALUES (3, 3, 'office', '780', '9796559');

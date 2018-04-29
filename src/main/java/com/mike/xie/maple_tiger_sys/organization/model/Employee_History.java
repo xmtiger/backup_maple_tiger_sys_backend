@@ -8,25 +8,25 @@ import javax.persistence.Table;
 import com.mike.xie.maple_tiger_sys.model.History;
 
 @Entity
-@Table(name = "department_histories")
-public class Department_History extends History{
+@Table(name = "employee_histories")
+public class Employee_History extends History {
 
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
-	protected Department owner;
+	protected Employee owner;
 	
-	public void setOwner(Department owner) {
+	public void setOwner(Employee owner) {
 		this.owner = owner;
 		if(!owner.getHistories().contains(this)) {
 			owner.getHistories().add(this);
 		}
 	}
 	
-	public Department getOwner() {
+	public Employee getOwner() {
 		return this.owner;
 	}
 	
-	public void removeOwner(Department owner) {
+	public void removeOwner(Employee owner) {
 		if(owner != null) {
 			if(owner.getHistories().contains(this)) {
 				owner.getHistories().remove(this);

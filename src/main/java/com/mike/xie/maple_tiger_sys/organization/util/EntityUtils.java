@@ -26,4 +26,13 @@ public abstract class EntityUtils {
         }
         throw new ObjectRetrievalFailureException(entityClass, entityId);
     }
+    
+    public static <T extends BaseEntity> T getById(T entity, Class<T> entityClass, int entityId) throws ObjectRetrievalFailureException {
+    	        
+    	if(entity.getId() == entityId && entityClass.isInstance(entity)){
+    	    return entity;
+    	}
+    	        
+    	throw new ObjectRetrievalFailureException(entityClass, entityId);
+    }
 }

@@ -59,11 +59,17 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 	@Override
 	public void deleteDepartmentById(int deptId) throws DataAccessException {
 		if(deptId > 0){
-            Department dept = this.findDepartmentById(deptId);
-            
-            this.em.remove(dept);
-            //Query query = this.em.createQuery("DELETE FROM Department dept Where dept.id = :id");
-            //int delCount = query.setParameter("id", deptId).executeUpdate();
+			
+			String str_id = String.valueOf(deptId);
+			/*note: the subordinate employees shall also be deleted, but employee involves other deletions for other tables.
+			  it becomes complicated and easy to make mistake to do such deletion*/
+			
+			this.em.createQuery("DELETE FROM Department_Address v WHERE owner_id=" + str_id).executeUpdate();
+			this.em.createQuery("DELETE FROM Department_Phone v WHERE owner_id=" + str_id).executeUpdate();
+			this.em.createQuery("DELETE FROM Department_Email v WHERE owner_id=" + str_id).executeUpdate();
+			this.em.createQuery("DELETE FROM Department_History v WHERE owner_id=" + str_id).executeUpdate();
+			
+			this.em.createQuery("DELETE FROM Department v WHERE id=" + str_id).executeUpdate();
         }
 		
 	}

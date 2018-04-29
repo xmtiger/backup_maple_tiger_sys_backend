@@ -1,3 +1,16 @@
+DROP TABLE employee_addresses IF EXISTS;
+DROP TABLE employee_emails IF EXISTS;
+DROP TABLE employee_phones IF EXISTS;
+DROP TABLE employee_histories IF EXISTS;
+DROP TABLE employees IF EXISTS;
+
+DROP TABLE department_addresses IF EXISTS;
+DROP TABLE department_emails IF EXISTS;
+DROP TABLE department_phones IF EXISTS;
+DROP TABLE department_histories IF EXISTS;
+DROP TABLE department_relationship IF EXISTS;
+DROP TABLE departments IF EXISTS;
+
 DROP TABLE user_roles IF EXISTS;
 DROP TABLE users IF EXISTS;
 DROP TABLE roles IF EXISTS;
@@ -27,17 +40,17 @@ ALTER TABLE user_roles ADD CONSTRAINT fk_user_roles_users FOREIGN KEY (user_id) 
 ALTER TABLE user_roles ADD CONSTRAINT fk_user_roles_roles FOREIGN KEY (role_id) REFERENCES roles (id);
 
 /*-----------------------------The upper tables are for security---------------------------------------*/
-DROP TABLE department_relationship IF EXISTS;
-DROP TABLE departments IF EXISTS;
-DROP TABLE department_addresses IF EXISTS;
-DROP TABLE department_emails IF EXISTS;
-DROP TABLE department_phones IF EXISTS;
-DROP TABLE department_histories IF EXISTS;
-
-DROP TABLE employees IF EXISTS;
-DROP TABLE employee_addresses IF EXISTS;
-DROP TABLE employee_emails IF EXISTS;
-DROP TABLE employee_phones IF EXISTS;
+CREATE TABLE employee_histories (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	owner_id					INTEGER NOT NULL,
+	
+	status						VARCHAR(10),
+	
+	begin_time					DATE,
+	end_time					DATE,
+	
+	description					VARCHAR(255)
+);
 
 CREATE TABLE employee_phones (
 	id							INTEGER IDENTITY PRIMARY KEY,
@@ -79,7 +92,7 @@ CREATE TABLE employee_addresses (
 CREATE TABLE employees (
 	id							INTEGER IDENTITY PRIMARY KEY,
 	department_id         		INTEGER NOT NULL,
-	user_id						INTEGER NOT NULL,
+	user_id						INTEGER,
 	
 	first_name      			VARCHAR_IGNORECASE(30),
     middle_name     			VARCHAR_IGNORECASE(30),
@@ -157,6 +170,7 @@ ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_child FOREIGN KEY (id
 ALTER TABLE employees ADD CONSTRAINT fk_dept_employee FOREIGN KEY (department_id) REFERENCES departments (id); 
 ALTER TABLE employees ADD CONSTRAINT fk_user_employee FOREIGN KEY (user_id) REFERENCES users (id);
 
+ALTER TABLE employee_histories ADD CONSTRAINT fk_employee_history FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_phones ADD CONSTRAINT fk_employee_phone FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_emails ADD CONSTRAINT fk_employee_email FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_addresses ADD CONSTRAINT fk_employee_address FOREIGN KEY (owner_id) REFERENCES employees (id);
