@@ -1,6 +1,8 @@
 package com.mike.xie.maple_tiger_sys.organization.rest;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,10 +27,24 @@ public class DepartmentRestController {
 	@RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Collection<Department>> getDepartments() {
 		Collection<Department> departments = this.organizationService.findAllDepartments();
+		
+		/*only collect the department at root level, for which father is null
+		  because the department repeats when the department has a father;
+		  Note: to check if father is null, it is only can be done at server side, 
+		  because the client side does not have father due to the tag of jsonIgnore*/
+		Collection<Department> outputDepartments = new HashSet<Department>();
+		Iterator<Department> iter_department = departments.iterator();
+		while(iter_department.hasNext()) {
+			Department department = iter_department.next();
+			if(department.getFather() == null) {
+				outputDepartments.add(department);
+			}
+		}
+		
 		if(departments.isEmpty()) {
 			return new ResponseEntity<Collection<Department>>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<Collection<Department>>(departments, HttpStatus.OK);
+		return new ResponseEntity<Collection<Department>>(outputDepartments, HttpStatus.OK);
 	}
 	
 	@RequestMapping(value = "/tree", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)

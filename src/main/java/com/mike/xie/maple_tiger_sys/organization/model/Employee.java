@@ -46,10 +46,39 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
 	private Set<Employee_History> histories;
 	
+	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<Employee_File> files;	
+	
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")	// this is the foreign key of the user table, which contains security information
 	@NotFound(action=NotFoundAction.IGNORE)	//an employee may not have a credential user account 
 	private User user;
+	
+	public Set<Employee_File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<Employee_File> files) {
+		this.files = files;
+	}
+	
+	public void addFile(Employee_File file) {
+		if(this.files == null) {
+			this.files = new HashSet<Employee_File>();
+		}
+		
+		this.files.add(file);
+		if(file.getOwner() != null) {
+			file.setOwner(this);
+		}
+	}
+	
+	public void removeFile(Employee_File file) {
+		if(file.getOwner() == this) {
+			file.removeOwner(this);
+		}
+		this.files.remove(file);
+	}
 	
 	public Department getDepartment() {
         return department;

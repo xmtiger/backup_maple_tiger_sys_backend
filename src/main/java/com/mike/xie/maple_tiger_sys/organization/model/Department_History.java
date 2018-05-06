@@ -5,6 +5,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mike.xie.maple_tiger_sys.model.History;
 
 @Entity
@@ -13,6 +14,7 @@ public class Department_History extends History{
 
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
+	@JsonIgnore
 	protected Department owner;
 	
 	public void setOwner(Department owner) {

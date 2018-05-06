@@ -13,49 +13,31 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import com.mike.xie.maple_tiger_sys.model.Familyable;
 
 import com.mike.xie.maple_tiger_sys.model.NamedEntity;
-import com.mike.xie.maple_tiger_sys.organization.rest.JsonCustomDepartmentDeserializer;
-import com.mike.xie.maple_tiger_sys.organization.rest.JsonCustomDepartmentSerializer;
 
 @Entity
 @Table(name = "departments")
-@JsonSerialize(using = JsonCustomDepartmentSerializer.class)
-@JsonDeserialize(using = JsonCustomDepartmentDeserializer.class)
+//@JsonSerialize(using = JsonCustomDepartmentSerializer.class)
+//@JsonDeserialize(using = JsonCustomDepartmentDeserializer.class)
 public class Department extends NamedEntity implements Comparable<Department>, Familyable<Department> {
-	
-	/*@Column(name = "begin_time")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private Date begin_time;
-	
-	@Column(name = "end_time")
-    @Temporal(TemporalType.DATE)
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @JsonIgnore         //to avoid json version error from ajax to controller, when coversion with json data type.
-    private Date end_time;*/
 	
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
 	private Set<Department_History> histories;
 	
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
-	private Set<Department_Address> addresses;
-	
-	//mappedBy means the class field name of the class 'Employee'
-	//The fetch type shall be lazy in production version.
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department", fetch = FetchType.EAGER)
-    private Set<Employee> employees;
+	private Set<Department_Address> addresses;	
         
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER) // the "owner" is the field "owner" of the class Phone
     private Set<Department_Phone> phones;
     
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Department_Email> emails;
+    
+    /*@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    private Set<Department_File> files;*/
     
   //The following fields are for department relationship
     @ManyToOne(fetch = FetchType.EAGER)
@@ -66,11 +48,41 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "department_relationship", joinColumns = @JoinColumn(name = "id_father"),
-            inverseJoinColumns = @JoinColumn(name = "id_child"))
-    @JsonIgnore //to avoid infinite recursive definition actions.
+            inverseJoinColumns = @JoinColumn(name = "id_child"))    
     private Set<Department> children;
+    
+  //mappedBy means the class field name of the class 'Employee'
+  	//The fetch type shall be lazy in production version.
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "department", fetch = FetchType.EAGER)
+    private Set<Employee> employees;
 
-    public void addAddress(Department_Address address) {
+    /*public Set<Department_File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(Set<Department_File> files) {
+		this.files = files;
+	}
+	
+	public void addFile(Department_File file) {
+		if(this.files == null) {
+			this.files = new HashSet<Department_File>();
+		}
+		
+		this.files.add(file);
+		if(file.getOwner() != null) {
+			file.setOwner(this);
+		}
+	}
+	
+	public void removeFile(Department_File file) {
+		if(file.getOwner() == this) {
+			file.removeOwner(this);
+		}
+		this.files.remove(file);
+	}*/
+
+	public void addAddress(Department_Address address) {
     	if(this.addresses == null) {
     		this.addresses = new HashSet<Department_Address>();
     	}

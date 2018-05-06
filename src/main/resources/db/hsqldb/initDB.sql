@@ -2,6 +2,7 @@ DROP TABLE employee_addresses IF EXISTS;
 DROP TABLE employee_emails IF EXISTS;
 DROP TABLE employee_phones IF EXISTS;
 DROP TABLE employee_histories IF EXISTS;
+DROP TABLE employee_files IF EXISTS;
 DROP TABLE employees IF EXISTS;
 
 DROP TABLE department_addresses IF EXISTS;
@@ -40,6 +41,22 @@ ALTER TABLE user_roles ADD CONSTRAINT fk_user_roles_users FOREIGN KEY (user_id) 
 ALTER TABLE user_roles ADD CONSTRAINT fk_user_roles_roles FOREIGN KEY (role_id) REFERENCES roles (id);
 
 /*-----------------------------The upper tables are for security---------------------------------------*/
+CREATE TABLE employee_files (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	name						VARCHAR(30),
+	
+	owner_id					INTEGER NOT NULL,
+	
+	status						VARCHAR(10),
+	
+	file_type					VARCHAR(20),
+	file_path					VARCHAR(90),
+	
+	upload_time					DATE,
+	
+	description					VARCHAR(255)
+);
+
 CREATE TABLE employee_histories (
 	id							INTEGER IDENTITY PRIMARY KEY,
 	owner_id					INTEGER NOT NULL,
@@ -170,6 +187,7 @@ ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_child FOREIGN KEY (id
 ALTER TABLE employees ADD CONSTRAINT fk_dept_employee FOREIGN KEY (department_id) REFERENCES departments (id); 
 ALTER TABLE employees ADD CONSTRAINT fk_user_employee FOREIGN KEY (user_id) REFERENCES users (id);
 
+ALTER TABLE employee_files ADD CONSTRAINT fk_employee_file FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_histories ADD CONSTRAINT fk_employee_history FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_phones ADD CONSTRAINT fk_employee_phone FOREIGN KEY (owner_id) REFERENCES employees (id);
 ALTER TABLE employee_emails ADD CONSTRAINT fk_employee_email FOREIGN KEY (owner_id) REFERENCES employees (id);

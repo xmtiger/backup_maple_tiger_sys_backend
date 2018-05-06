@@ -6,6 +6,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mike.xie.maple_tiger_sys.model.Address;
 
 @Entity
@@ -14,6 +15,7 @@ public class Employee_Address extends Address {
 	
 	@ManyToOne
 	@JoinColumn(name = "owner_id")
+	@JsonIgnore
 	protected Employee owner;
 	
 	public void setOwner(Employee owner) {

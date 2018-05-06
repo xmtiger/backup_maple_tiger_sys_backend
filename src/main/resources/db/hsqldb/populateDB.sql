@@ -12,7 +12,7 @@ INSERT INTO user_roles VALUES (2, 3);
 INSERT INTO user_roles VALUES (3, 2);
 
 /*The upper is for initiation of security tables*/
-INSERT INTO departments VALUES (1, 'Managerment');
+INSERT INTO departments VALUES (1, 'Management');
 INSERT INTO departments VALUES (2, 'Engineering');
 INSERT INTO departments VALUES (3, 'Accounting');
 
@@ -37,6 +37,10 @@ INSERT INTO department_addresses VALUES (3, 3, 'office', 'Dollard', '1899', '', 
 INSERT INTO employees VALUES (1, 1, 1, 'james', '', 'Carter', '1977-09-07', 'MALE', 'ACTIVE');
 INSERT INTO employees VALUES (2, 2, 2, 'helen', '', 'Leary', '1978-08-16', 'FEMALE', 'ACTIVE');
 INSERT INTO employees VALUES (3, 3, 3, 'Linda', '', 'Douglas', '1982-05-31', 'FEMALE', 'ACTIVE');
+
+INSERT INTO employee_files VALUES (1, 'ID Photo', 1, 'ACTIVE', 'jpg', 'files/employee/employee_1.jpg', '2003-09-10', 'This is for personal ID photo used internally');
+INSERT INTO employee_files VALUES (2, 'ID Photo', 2, 'ACTIVE', 'jpg', 'files/employee/employee_2.jpg', '2006-07-07', 'This is for personal ID photo used internally');
+INSERT INTO employee_files VALUES (3, 'ID Photo', 3, 'ACTIVE', 'jpg', 'files/employee/employee_3.jpg', '2012-06-09', 'This is for personal ID photo used internally');
 
 INSERT INTO employee_histories VALUES (1, 1, 'ACTIVE', '2003-09-01', '1900-01-01', '');
 INSERT INTO employee_histories VALUES (2, 2, 'ACTIVE', '2006-08-01', '1900-01-01', '');
