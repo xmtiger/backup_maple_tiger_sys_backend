@@ -24,6 +24,9 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 	  which I think is the Class name of the Class "Department" rather than the table name "departments" */
 	@Override
 	public Department findDepartmentById(int id) throws DataAccessException {
+		if(id <= 0) {
+			return null;
+		}
 		Query query = this.em.createQuery("SELECT DISTINCT dept FROM Department dept left join fetch dept.employees WHERE dept.id = :id");
         query.setParameter("id", id);
         return (Department) query.getSingleResult();

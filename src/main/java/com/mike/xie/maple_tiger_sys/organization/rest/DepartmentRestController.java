@@ -4,16 +4,27 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.mike.xie.maple_tiger_sys.organization.model.Department;
+import com.mike.xie.maple_tiger_sys.organization.model.Department_Address;
+import com.mike.xie.maple_tiger_sys.organization.model.Department_Email;
+import com.mike.xie.maple_tiger_sys.organization.model.Department_History;
+import com.mike.xie.maple_tiger_sys.organization.model.Department_Phone;
 import com.mike.xie.maple_tiger_sys.organization.service.OrganizationService;
 import com.mike.xie.maple_tiger_sys.organization.util.TreeNode;
 
@@ -74,5 +85,61 @@ public class DepartmentRestController {
 			return new  ResponseEntity<Collection<Department>>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<Collection<Department>>(departments, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/update/id/{departmentId}/fatherId/{fatherId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Department> updateDepartment(@PathVariable("departmentId") int departmentId, 
+			@PathVariable("fatherId") int fatherId, @RequestBody @Valid Department department,
+			BindingResult bindingResult) {
+		
+		BindingErrorsResponse errors = new BindingErrorsResponse();
+		HttpHeaders headers = new HttpHeaders();
+		if (bindingResult.hasErrors() || (department == null)) {
+			errors.addAllErrors(bindingResult);
+			headers.add("errors", errors.toJSON());
+			return new ResponseEntity<Department>(headers, HttpStatus.BAD_REQUEST);
+		}
+		/* find department by id from the input department, and set the fields from the input department also
+		 * Also note the owner for the filed members are also required to be set*/
+		Department currentDepartment = this.organizationService.findDepartmentById(departmentId);
+		if(currentDepartment == null) {
+			return new ResponseEntity<Department>(HttpStatus.NOT_FOUND);
+		}
+		
+		Department fatherDepartment = this.organizationService.findDepartmentById(fatherId);
+		
+		currentDepartment.setName(department.getName());
+		
+		Iterator<Department_Address> iter_addresses = department.getAddresses().iterator();
+		while(iter_addresses.hasNext()) {
+			iter_addresses.next().setOwner(currentDepartment);
+		}
+		
+		Iterator<Department_Email> iter_emails = department.getEmails().iterator();
+		while(iter_emails.hasNext()) {
+			iter_emails.next().setOwner(currentDepartment);
+		}
+		
+		Iterator<Department_History> iter_histories = department.getHistories().iterator();
+		while(iter_histories.hasNext()) {
+			iter_histories.next().setOwner(currentDepartment);
+		}
+		
+		Iterator<Department_Phone> iter_phones = department.getPhones().iterator();
+		while(iter_phones.hasNext()) {
+			iter_phones.next().setOwner(currentDepartment);
+		}
+		
+		currentDepartment.setAddresses(department.getAddresses());
+		currentDepartment.setEmails(department.getEmails());
+		currentDepartment.setHistories(department.getHistories());
+		currentDepartment.setPhones(department.getPhones());
+		if(fatherDepartment != null) {
+			currentDepartment.setFather(department);
+		}
+		currentDepartment.setChildren(department.getChildren());
+		
+		this.organizationService.saveDepartment(currentDepartment);		
+		return new ResponseEntity<Department>(currentDepartment, HttpStatus.NO_CONTENT);
 	}
 }
