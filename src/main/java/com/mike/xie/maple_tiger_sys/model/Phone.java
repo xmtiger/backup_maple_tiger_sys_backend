@@ -42,5 +42,11 @@ public class Phone extends BaseEntity {
 		this.phone_number = phone_number;
 	}
 	
-	
+	public void copy(Phone phone) {
+		if(phone != null) {
+			this.phone_type = phone.phone_type;
+			this.area_code = phone.area_code;
+			this.phone_number = phone.phone_number;
+		}
+	}
 }

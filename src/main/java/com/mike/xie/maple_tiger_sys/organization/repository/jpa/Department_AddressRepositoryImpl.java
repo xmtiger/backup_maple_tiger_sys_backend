@@ -29,6 +29,10 @@ public class Department_AddressRepositoryImpl implements Department_AddressRepos
 
 	@Override
 	public void save(Department_Address address) throws DataAccessException {
+		if(address.getId() != null && address.getId() <= 0) {
+			address.setId(null);
+		}
+		
 		if(address.getId() == null){
             this.em.persist(address);
         } else{

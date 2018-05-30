@@ -34,13 +34,15 @@ INSERT INTO department_addresses VALUES (1, 1, 'office', 'Dollard', '1899', '', 
 INSERT INTO department_addresses VALUES (2, 2, 'office', 'Dollard', '1899', '', '201', 'Montreal', 'Quebec', 'Canada', 'H8N 3H7'); 
 INSERT INTO department_addresses VALUES (3, 3, 'office', 'Dollard', '1899', '', '201', 'Montreal', 'Quebec', 'Canada', 'H8N 3H8'); 
 
-INSERT INTO employees VALUES (1, 1, 1, 'james', '', 'Carter', '1977-09-07', 'MALE', 'ACTIVE');
-INSERT INTO employees VALUES (2, 2, 2, 'helen', '', 'Leary', '1978-08-16', 'FEMALE', 'ACTIVE');
-INSERT INTO employees VALUES (3, 3, 3, 'Linda', '', 'Douglas', '1982-05-31', 'FEMALE', 'ACTIVE');
+INSERT INTO employees VALUES (1, 1, 1, 'james', '', 'Carter', '1977-09-07', 'MALE', 'ACTIVE', 'CEO');
+INSERT INTO employees VALUES (2, 2, 2, 'helen', '', 'Leary', '1978-08-16', 'FEMALE', 'ACTIVE', 'Engineer');
+INSERT INTO employees VALUES (3, 3, 3, 'Linda', '', 'Douglas', '1982-05-31', 'FEMALE', 'ACTIVE', 'Accountant');
 
-INSERT INTO employee_files VALUES (1, 'ID Photo', 1, 'ACTIVE', 'jpg', 'files/employee/employee_1.jpg', '2003-09-10', 'This is for personal ID photo used internally');
-INSERT INTO employee_files VALUES (2, 'ID Photo', 2, 'ACTIVE', 'jpg', 'files/employee/employee_2.jpg', '2006-07-07', 'This is for personal ID photo used internally');
-INSERT INTO employee_files VALUES (3, 'ID Photo', 3, 'ACTIVE', 'jpg', 'files/employee/employee_3.jpg', '2012-06-09', 'This is for personal ID photo used internally');
+INSERT INTO employee_files VALUES (1, 'ID Photo', 1, 'ACTIVE', 'image', 'employee/files/1/employee_1_1.jpg', '2003-09-10', 'ID photo');
+INSERT INTO employee_files VALUES (2, 'ID Photo', 2, 'ACTIVE', 'image', 'employee/files/2/employee_2_1.jpg', '2006-07-07', 'ID photo');
+INSERT INTO employee_files VALUES (3, 'ID Photo', 3, 'ACTIVE', 'image', 'employee/files/3/employee_3_1.jpg', '2012-06-09', 'ID photo');
+INSERT INTO employee_files VALUES (4, 'ID Photo', 3, 'ACTIVE', 'image', 'employee/files/3/employee_3_2.jpg', '2012-06-09', 'ID photo');
+
 
 INSERT INTO employee_histories VALUES (1, 1, 'ACTIVE', '2003-09-01', '1900-01-01', '');
 INSERT INTO employee_histories VALUES (2, 2, 'ACTIVE', '2006-08-01', '1900-01-01', '');
@@ -58,9 +60,28 @@ INSERT INTO employee_addresses VALUES (1, 1, 'living', 'springland', '191', '', 
 INSERT INTO employee_addresses VALUES (2, 2, 'living', 'westland', '8827', '', '', 'Montreal', 'Quebec', 'Canada', 'H8N 3H7');
 INSERT INTO employee_addresses VALUES (3, 3, 'living', 'eastside', '2356', '', '', 'Montreal', 'Quebec', 'Canada', 'H8N 3H8');
 
+/* The following initializations are for timesheet module*/
 
+INSERT INTO projects VALUES (1, 'Kitmat Project', 'Moderization of existing Kitmat Aluminum plate', 'Active');
+INSERT INTO projects VALUES (2, 'IOC project', 'expansion of IOC', 'Active');
+INSERT INTO projects VALUES (3, 'IOC project phrase I', 'expansion of ball mill', 'Finished');
+INSERT INTO projects VALUES (4, 'IOC project phrase II', 'new mill', 'suspended');
+INSERT INTO projects VALUES (5, 'IOC project phrase III', 'transportation line upgrade', 'suspended');
 
+INSERT INTO project_relationship VALUES (2, 3);
+INSERT INTO project_relationship VALUES (2, 4);
+INSERT INTO project_relationship VALUES (2, 5);
 
+INSERT INTO charge_codes VALUES (1, 1, '2015K-01256-226', '2010-03-08', '2018-09-26', 'regular charge code');
+INSERT INTO charge_codes VALUES (2, 3, '2012I-01256-226', '2012-05-08', '2014-10-19', 'overhead charge code');
+INSERT INTO charge_codes VALUES (3, 3, '2012I-01256-226', '2012-05-08', '2014-6-11', 'regular charge code');
+INSERT INTO charge_codes VALUES (4, 4, '2013I-01256-227', '2013-06-09', '2015-7-15', 'regular charge code');
+INSERT INTO charge_codes VALUES (5, 5, '2014I-01256-228', '2014-07-11', '2016-8-22', 'regular charge code');
+
+INSERT INTO timesheets VALUES (1, 1, 2, '2018-05-28', 8);
+INSERT INTO timesheets VALUES (2, 1, 2, '2015-05-29', 8);
+
+INSERT INTO assignments VALUES (1, 1, 1, 'project engineer', '2011-05-16', '2013-09-18', 'active', 'engineering coordinator');
 
 
 

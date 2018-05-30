@@ -77,5 +77,13 @@ public class Person extends BaseEntity{
 		this.gender = gender;
 	}
     
-    
+	public void copy(Person person) {
+		if(person != null) {
+			this.firstName = person.firstName;
+			this.lastName = person.lastName;
+			this.gender = person.gender;
+			this.middleName = person.middleName;
+			this.birth_date = person.birth_date;
+		}
+	}
 }

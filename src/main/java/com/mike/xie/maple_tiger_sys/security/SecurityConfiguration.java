@@ -41,6 +41,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter{
          http
              .httpBasic().and()
              .authorizeRequests()
+             	.antMatchers("/api/department/**").access("hasRole('ROLE_ADMIN')")
+             	.antMatchers("/api/employee/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER') or hasRole('ROLE_ACCOUNTANT')")
                 .antMatchers("/index.html", "/", "/home").permitAll()
                 .anyRequest().authenticated()
                 .and()

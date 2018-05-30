@@ -35,6 +35,10 @@ public class Employee_EmailRepositoryImpl implements Employee_EmailRepository{
 
 	@Override
 	public void save(Employee_Email employeeEmail) throws DataAccessException {
+		if(employeeEmail.getId() != null && employeeEmail.getId() <= 0) {
+			employeeEmail.setId(null);
+		}
+		
 		if(employeeEmail.getId() == null){
             this.em.persist(employeeEmail);
         } else{

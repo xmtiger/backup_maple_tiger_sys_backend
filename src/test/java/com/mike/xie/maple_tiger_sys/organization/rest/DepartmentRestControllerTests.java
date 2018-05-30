@@ -20,7 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import com.mike.xie.maple_tiger_sys.organization.model.Department;
-import com.mike.xie.maple_tiger_sys.organization.service.ApplicationTestConfig;
+
 import com.mike.xie.maple_tiger_sys.organization.service.OrganizationService;
 
 @SpringBootTest

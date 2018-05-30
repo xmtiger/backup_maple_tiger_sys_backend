@@ -43,14 +43,14 @@ ALTER TABLE user_roles ADD CONSTRAINT fk_user_roles_roles FOREIGN KEY (role_id) 
 /*-----------------------------The upper tables are for security---------------------------------------*/
 CREATE TABLE employee_files (
 	id							INTEGER IDENTITY PRIMARY KEY,
-	name						VARCHAR(30),
+	name						VARCHAR(100),
 	
 	owner_id					INTEGER NOT NULL,
 	
 	status						VARCHAR(10),
 	
 	file_type					VARCHAR(20),
-	file_path					VARCHAR(90),
+	file_path					VARCHAR(100),
 	
 	upload_time					DATE,
 	
@@ -118,7 +118,8 @@ CREATE TABLE employees (
 	birth_date      			DATE,
     gender          			VARCHAR(10),
 	
-	status						VARCHAR(10)
+	status						VARCHAR(10),
+        title                           VARCHAR(30)
 );
 
 CREATE TABLE department_histories (
@@ -181,6 +182,69 @@ CREATE TABLE department_relationship(
     id_child        INTEGER NOT NULL
 );
 
+/*-----------------------------The following tables are for timesheet module---------------------------------------*/
+
+CREATE TABLE projects (
+        id          			INTEGER IDENTITY PRIMARY KEY,
+        name					VARCHAR(100),
+        description				VARCHAR(255),
+        status					VARCHAR(10)
+);
+
+CREATE TABLE project_relationship (
+		id_father	INTEGER NOT NULL,
+		id_child	INTEGER NOT NULL
+);
+
+CREATE TABLE project_histories (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	owner_id					INTEGER NOT NULL,
+	
+	status						VARCHAR(10),
+	
+	begin_time					DATE,
+	end_time					DATE,
+	
+	description					VARCHAR(255)
+);
+
+CREATE TABLE charge_codes (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	project_id					INTEGER NOT NULL,
+	
+	name						VARCHAR(60),
+	
+	begin_time					DATE,
+	end_time					DATE,
+	
+	description					VARCHAR(255)
+);
+
+CREATE TABLE timesheets (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	owner_id					INTEGER NOT NULL,
+	charge_code_id				INTEGER NOT NULL,
+	date						DATE,
+	hours						TINYINT		
+);
+
+
+CREATE TABLE assignments (
+	id							INTEGER IDENTITY PRIMARY KEY,
+	employee_id					INTEGER NOT NULL,
+	project_id					INTEGER NOT NULL,
+	
+	title						VARCHAR(100),
+	begin_time					DATE,
+	end_time					DATE, 
+	status						VARCHAR(10),
+	
+	description					VARCHAR(255)
+);
+
+ALTER TABLE assignments ADD CONSTRAINT fk_employee_assignments FOREIGN KEY (employee_id) REFERENCES employees (id);
+ALTER TABLE assignments ADD CONSTRAINT fk_project_assignments FOREIGN KEY (project_id) REFERENCES projects (id);
+
 ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_father FOREIGN KEY (id_father) REFERENCES departments (id);
 ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_child FOREIGN KEY (id_child) REFERENCES departments (id);
 
@@ -197,5 +261,20 @@ ALTER TABLE department_phones ADD CONSTRAINT fk_department_phone FOREIGN KEY (ow
 ALTER TABLE department_emails ADD CONSTRAINT fk_department_email FOREIGN KEY (owner_id) REFERENCES departments (id);
 ALTER TABLE department_addresses ADD CONSTRAINT fk_department_address FOREIGN KEY (owner_id) REFERENCES departments (id);
 ALTER TABLE department_histories ADD CONSTRAINT fk_dept_history FOREIGN KEY (owner_id) REFERENCES departments (id);
+
+/*--------------------------- the following are constraints for timesheet module----------------------------------*/
+
+ALTER TABLE project_relationship ADD CONSTRAINT fk_project_father FOREIGN KEY (id_father) REFERENCES projects (id);
+ALTER TABLE project_relationship ADD CONSTRAINT fk_project_child FOREIGN KEY (id_child) REFERENCES projects (id);
+
+ALTER TABLE project_histories ADD CONSTRAINT fk_project_histories FOREIGN KEY (owner_id) REFERENCES projects (id);
+
+ALTER TABLE charge_codes ADD CONSTRAINT fk_charge_codes FOREIGN KEY (project_id) REFERENCES projects (id);
+
+ALTER TABLE timesheets ADD CONSTRAINT fk_owner_timesheets FOREIGN KEY (owner_id) REFERENCES employees (id);
+ALTER TABLE timesheets ADD CONSTRAINT fk_charge_code_timesheets FOREIGN KEY (charge_code_id) REFERENCES charge_codes (id);
+
+
+
 
  

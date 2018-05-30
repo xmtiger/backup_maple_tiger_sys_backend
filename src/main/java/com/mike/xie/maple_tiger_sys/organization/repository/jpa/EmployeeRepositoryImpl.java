@@ -38,6 +38,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 
 	@Override
 	public void save(Employee employee) throws DataAccessException {
+		if(employee.getId() != null && employee.getId() <= 0) {
+			employee.setId(null);
+		}
 		if(employee.getId() == null){
             this.em.persist(employee);
         }else{
@@ -64,7 +67,9 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
 			this.em.createQuery("DELETE FROM Employee_Address v WHERE owner_id=" + str_id).executeUpdate();
 			this.em.createQuery("DELETE FROM Employee_Email v WHERE owner_id=" + str_id).executeUpdate();
 			this.em.createQuery("DELETE FROM Employee_Phone v WHERE owner_id=" + str_id).executeUpdate();
-			
+			this.em.createQuery("DELETE FROM Employee_History v WHERE owner_id=" + str_id).executeUpdate();
+			this.em.createQuery("DELETE FROM Employee_File v WHERE owner_id=" + str_id).executeUpdate();
+
 			this.em.createQuery("DELETE FROM Employee v WHERE id=" + str_id).executeUpdate();
 		}
 		

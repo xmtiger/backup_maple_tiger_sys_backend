@@ -6,6 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mike.xie.maple_tiger_sys.organization.model.Department;
 
 @MappedSuperclass
 public class BaseEntity {

@@ -42,8 +42,12 @@ public class DepartmentRepositoryImpl implements DepartmentRepository {
 
 	@Override
 	public void save(Department department) throws DataAccessException {
-		
-		if(department.getId() == null){
+	//To prevent the error of 'detached entity passed to persist', it is necessary to set id as null for new objects
+	if(department.getId() != null && department.getId() <= 0) {
+		department.setId(null);
+	}
+	
+	if(department.getId() == null){
             this.em.persist(department);
         } else{
             this.em.merge(department);

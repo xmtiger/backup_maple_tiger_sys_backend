@@ -64,4 +64,14 @@ public class History extends BaseEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public void copy(History history) {
+		if(history != null) {
+			this.status = history.status;
+			this.description = history.description;
+			this.status = history.status;
+			this.begin_time = history.begin_time;
+			this.end_time = history.end_time;
+		}
+	}
 }

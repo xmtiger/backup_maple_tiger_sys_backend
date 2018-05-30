@@ -35,6 +35,9 @@ public class Employee_PhoneRepositoryImpl implements Employee_PhoneRepository {
 
 	@Override
 	public void save(Employee_Phone phone) throws DataAccessException {
+		if(phone.getId() != null && phone.getId() <= 0) {
+			phone.setId(null);
+		}
 		if(phone.getId() == null){
             this.em.persist(phone);
         } else{

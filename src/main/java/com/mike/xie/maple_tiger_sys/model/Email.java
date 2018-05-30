@@ -32,5 +32,11 @@ public class Email extends BaseEntity {
 		this.email_address = email_address;
 	}
 	
+	public void copy(Email email) {
+		if(email != null) {
+			this.email_address = email.email_address;
+			this.email_type = email.email_type;
+		}
+	}
 	
 }

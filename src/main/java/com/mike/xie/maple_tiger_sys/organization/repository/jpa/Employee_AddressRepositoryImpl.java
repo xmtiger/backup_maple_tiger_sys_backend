@@ -37,6 +37,10 @@ public class Employee_AddressRepositoryImpl implements Employee_AddressRepositor
 
 	@Override
 	public void save(Employee_Address address) throws DataAccessException {
+		if(address.getId() != null && address.getId() <= 0) {
+			address.setId(null);
+		}
+		
 		if(address.getId() == null){
             this.em.persist(address);
         } else{

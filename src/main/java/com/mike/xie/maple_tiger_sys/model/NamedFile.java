@@ -69,5 +69,15 @@ public class NamedFile extends NamedEntity{
 		this.description = description;
 	}
 	
-	
+	public void copy(NamedFile file) {
+		if(file != null) {
+			this.setName(file.getName());
+			this.description = file.getDescription();
+			this.file_path = file.getFile_path();
+			this.file_type = file.getFile_type();
+			this.status = file.getStatus();
+			this.upload_time = file.getUpload_time();
+			
+		}
+	}
 }

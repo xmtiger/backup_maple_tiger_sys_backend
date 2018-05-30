@@ -35,7 +35,11 @@ public class Department_EmailRepositoryImpl implements Department_EmailRepositor
 
 	@Override
 	public void save(Department_Email departmentEmail) throws DataAccessException {
-		if(departmentEmail.getId() == null){
+		if(departmentEmail.getId() != null && departmentEmail.getId() <= 0) {
+			departmentEmail.setId(null);
+		}
+		
+		if(departmentEmail.getId() == null ){
             this.em.persist(departmentEmail);
         } else{
             this.em.merge(departmentEmail);

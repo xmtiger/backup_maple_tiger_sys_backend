@@ -35,6 +35,10 @@ public class Department_PhoneRepositoryImpl implements Department_PhoneRepositor
 
 	@Override
 	public void save(Department_Phone phone) throws DataAccessException {
+		if(phone.getId() != null && phone.getId() <= 0) {
+			phone.setId(null);
+		}
+		
 		if(phone.getId() == null){
             this.em.persist(phone);
         } else{

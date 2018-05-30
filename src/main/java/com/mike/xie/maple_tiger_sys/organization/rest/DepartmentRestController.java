@@ -3,6 +3,7 @@ package com.mike.xie.maple_tiger_sys.organization.rest;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.mike.xie.maple_tiger_sys.model.BaseEntity;
 import com.mike.xie.maple_tiger_sys.organization.model.Department;
 import com.mike.xie.maple_tiger_sys.organization.model.Department_Address;
 import com.mike.xie.maple_tiger_sys.organization.model.Department_Email;
@@ -86,11 +88,58 @@ public class DepartmentRestController {
 		}
 		return new ResponseEntity<Collection<Department>>(departments, HttpStatus.OK);
 	}
+	
+	@RequestMapping(value = "/add/id/{departmentId}/fatherId/{fatherId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Department> addNewDepartment(@PathVariable("departmentId") int departmentId, @PathVariable("fatherId") int fatherId,
+			@RequestBody @Valid Department department, BindingResult bindingResult) {
+		
+		BindingErrorsResponse errors = new BindingErrorsResponse();
+		HttpHeaders headers = new HttpHeaders();
+		if (bindingResult.hasErrors() || (department == null)) {
+			errors.addAllErrors(bindingResult);
+			headers.add("errors", errors.toJSON());
+			return new ResponseEntity<Department>(headers, HttpStatus.BAD_REQUEST);
+		}
+		
+		// Department newDepartment = new Department();
+		// newDepartment.copyFrom(department);
 
-	@RequestMapping(value = "/update/id/{departmentId}/fatherId/{fatherId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+		if(fatherId > 0) {
+			Department parentDepartment = this.organizationService.findDepartmentById(fatherId);
+			if(parentDepartment == null) {
+				return new ResponseEntity<Department>(HttpStatus.NOT_FOUND);
+			}
+			department.setFather(parentDepartment);
+		}
+				
+		this.organizationService.saveDepartment(department);
+		
+		return new ResponseEntity<Department>(department, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/delete/id/{departmentId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Void> deleteDepartment(@PathVariable("departmentId") int departmentId) {
+		
+		/*BindingErrorsResponse errors = new BindingErrorsResponse();
+		HttpHeaders headers = new HttpHeaders();
+		if (bindingResult.hasErrors() || (department == null)) {
+			errors.addAllErrors(bindingResult);
+			headers.add("errors", errors.toJSON());
+			return new ResponseEntity<Department>(headers, HttpStatus.BAD_REQUEST);
+		}*/
+		
+		Department currentDepartment = this.organizationService.findDepartmentById(departmentId);
+		if(currentDepartment == null) {
+			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+		}
+		this.organizationService.deleteDepartmentById(departmentId);
+		
+		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+	}
+	
+	@RequestMapping(value = "/update/id/{departmentId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Department> updateDepartment(@PathVariable("departmentId") int departmentId, 
-			@PathVariable("fatherId") int fatherId, @RequestBody @Valid Department department,
-			BindingResult bindingResult) {
+			@RequestBody @Valid Department department, BindingResult bindingResult) {
 		
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
@@ -101,45 +150,106 @@ public class DepartmentRestController {
 		}
 		/* find department by id from the input department, and set the fields from the input department also
 		 * Also note the owner for the filed members are also required to be set*/
-		Department currentDepartment = this.organizationService.findDepartmentById(departmentId);
+		return this.organizationService.updateDepartment(department, departmentId);
+		
+		/*Department currentDepartment = this.organizationService.findDepartmentById(departmentId);
 		if(currentDepartment == null) {
 			return new ResponseEntity<Department>(HttpStatus.NOT_FOUND);
 		}
-		
-		Department fatherDepartment = this.organizationService.findDepartmentById(fatherId);
-		
+				
 		currentDepartment.setName(department.getName());
 		
-		Iterator<Department_Address> iter_addresses = department.getAddresses().iterator();
-		while(iter_addresses.hasNext()) {
-			iter_addresses.next().setOwner(currentDepartment);
-		}
-		
-		Iterator<Department_Email> iter_emails = department.getEmails().iterator();
-		while(iter_emails.hasNext()) {
-			iter_emails.next().setOwner(currentDepartment);
-		}
-		
-		Iterator<Department_History> iter_histories = department.getHistories().iterator();
-		while(iter_histories.hasNext()) {
-			iter_histories.next().setOwner(currentDepartment);
-		}
-		
-		Iterator<Department_Phone> iter_phones = department.getPhones().iterator();
-		while(iter_phones.hasNext()) {
-			iter_phones.next().setOwner(currentDepartment);
-		}
-		
-		currentDepartment.setAddresses(department.getAddresses());
-		currentDepartment.setEmails(department.getEmails());
-		currentDepartment.setHistories(department.getHistories());
-		currentDepartment.setPhones(department.getPhones());
-		if(fatherDepartment != null) {
-			currentDepartment.setFather(department);
-		}
-		currentDepartment.setChildren(department.getChildren());
+		this.filter(department.getAddresses(), currentDepartment.getAddresses(), currentDepartment);
+		this.filter(department.getEmails(), currentDepartment.getEmails(), currentDepartment);
+		this.filter(department.getHistories(), currentDepartment.getHistories(), currentDepartment);
+		this.filter(department.getPhones(), currentDepartment.getPhones(), currentDepartment);
 		
 		this.organizationService.saveDepartment(currentDepartment);		
-		return new ResponseEntity<Department>(currentDepartment, HttpStatus.NO_CONTENT);
+		return new ResponseEntity<Department>(currentDepartment, HttpStatus.NO_CONTENT);*/
 	}
+	
+	/*public void filter(Collection<? extends BaseEntity> setFromClient, Collection<? extends BaseEntity> setFromServer, Department currentDepartment) {
+		// iterate email set to find which one is to be added or removed or revised.
+		Collection<BaseEntity> departmentItemsToBeDeleted = new HashSet<BaseEntity>();
+		Iterator<? extends BaseEntity> iter_currentItems = setFromServer.iterator();
+        boolean ifExistingItemsEmpty = true;
+		while(iter_currentItems.hasNext()) {
+                        ifExistingItemsEmpty = false;
+			BaseEntity currentDepartmentItem = iter_currentItems.next();
+						
+			Iterator<? extends BaseEntity> iter_items = setFromClient.iterator();
+			boolean ifDeleted = true;
+			while(iter_items.hasNext()) {
+				BaseEntity itemToBeUpdatedOrAdded = iter_items.next();
+						
+				if(itemToBeUpdatedOrAdded.getId()<=0) {	// id<=0, it is a new email to be added
+					//through setOwner, the department already put the email into its email set
+					if(itemToBeUpdatedOrAdded instanceof Department_Email) {
+						((Department_Email)itemToBeUpdatedOrAdded).setOwner(currentDepartment);
+					} else if(itemToBeUpdatedOrAdded instanceof Department_Address) {
+						((Department_Address)itemToBeUpdatedOrAdded).setOwner(currentDepartment);
+					} else if (itemToBeUpdatedOrAdded instanceof Department_Phone) {
+						((Department_Phone)itemToBeUpdatedOrAdded).setOwner(currentDepartment);
+					} else if (itemToBeUpdatedOrAdded instanceof Department_History) {
+						((Department_History)itemToBeUpdatedOrAdded).setOwner(currentDepartment);
+					}
+					              
+					ifDeleted = false;
+				}
+						
+				if(itemToBeUpdatedOrAdded.getId() == currentDepartmentItem.getId()) { // to be revised
+					if(itemToBeUpdatedOrAdded instanceof Department_Email) {
+						((Department_Email)currentDepartmentItem).copy(((Department_Email)itemToBeUpdatedOrAdded));
+					} else if(itemToBeUpdatedOrAdded instanceof Department_Address) {
+						((Department_Address)currentDepartmentItem).copy((Department_Address)itemToBeUpdatedOrAdded);
+					} else if (itemToBeUpdatedOrAdded instanceof Department_Phone) {
+						((Department_Phone)currentDepartmentItem).copy((Department_Phone)itemToBeUpdatedOrAdded);
+					} else if (itemToBeUpdatedOrAdded instanceof Department_History) {
+						((Department_History)currentDepartmentItem).copy((Department_History)itemToBeUpdatedOrAdded);
+					}
+					
+					ifDeleted = false;
+				}
+			}
+			if(ifDeleted == true) {	// to be deleted
+				departmentItemsToBeDeleted.add(currentDepartmentItem);
+			}
+		}
+        if(ifExistingItemsEmpty == true){
+                    
+        	// add the new items directly
+            Iterator<? extends BaseEntity> iter_items = setFromClient.iterator();
+            while(iter_items.hasNext()){
+            	BaseEntity itemToBeAdded = iter_items.next();
+                if(itemToBeAdded instanceof Department_Email) {
+                	((Department_Email)itemToBeAdded).setOwner(currentDepartment);
+                } else if(itemToBeAdded instanceof Department_Address) {
+                	((Department_Address)itemToBeAdded).setOwner(currentDepartment);
+                } else if (itemToBeAdded instanceof Department_Phone) {
+                    ((Department_Phone)itemToBeAdded).setOwner(currentDepartment);
+                } else if (itemToBeAdded instanceof Department_History) {
+                    ((Department_History)itemToBeAdded).setOwner(currentDepartment);
+                }
+            }
+        } else{
+                    
+        	setFromServer.removeAll(departmentItemsToBeDeleted);
+            Iterator<? extends BaseEntity> iter_toBeDeleted = departmentItemsToBeDeleted.iterator();
+            while(iter_toBeDeleted.hasNext()) {
+            
+            	BaseEntity itemToBeDeleted = iter_toBeDeleted.next();
+                
+            	if(itemToBeDeleted instanceof Department_Email) {
+            		this.organizationService.deleteDepartmentEmailById(itemToBeDeleted.getId());
+            	} else if(itemToBeDeleted instanceof Department_Address) {
+            		this.organizationService.deleteDepartmentAddressById(itemToBeDeleted.getId());
+                } else if (itemToBeDeleted instanceof Department_Phone) {
+                    this.organizationService.deleteDepartmentPhoneById(itemToBeDeleted.getId());
+                } else if (itemToBeDeleted instanceof Department_History) {
+                    this.organizationService.deleteDepartmentHistoryById(itemToBeDeleted.getId());
+                }
+
+            }
+       }		
+	}*/
 }

@@ -1,6 +1,7 @@
 package com.mike.xie.maple_tiger_sys.organization.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -81,6 +82,27 @@ public class Department extends NamedEntity implements Comparable<Department>, F
 		}
 		this.files.remove(file);
 	}*/
+    
+    public void addChild(Department department) {
+    	if(this.children == null) {
+    		this.children = new HashSet<Department>();
+    	}
+    	if(department != null) {
+    		Iterator<Department> iter = this.children.iterator();
+    		boolean bIfExist = false;
+    		while(iter.hasNext()) {
+    			Department dept = iter.next();
+    			if(dept.getId() == department.getId()) {
+    				bIfExist = true;
+    				break;
+    			}
+    		}
+    		if(bIfExist == false) {
+    			this.children.add(department);
+    		}
+    	}
+    	
+    }
 
 	public void addAddress(Department_Address address) {
     	if(this.addresses == null) {
@@ -256,8 +278,14 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     
     public boolean copyFrom(Department t){       
         
+    	this.setId(t.getId());
         this.setName(t.getName());
-               
+        this.setAddresses(t.getAddresses());
+        this.setEmails(t.getEmails());
+        this.setHistories(t.getHistories());
+        this.setPhones(t.getPhones());
+        this.setFather(t.getFather());
+        this.setChildren(t.getChildren());
         this.setEmployees(t.getEmployees());
         
         return true;

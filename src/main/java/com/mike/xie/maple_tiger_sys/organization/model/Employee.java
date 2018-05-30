@@ -28,6 +28,9 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 	
 	@Column(name = "status")
 	private String status;			//active or retired or laid off, etc..
+        
+        @Column(name = "title")
+        private String title;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
@@ -54,6 +57,30 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 	@NotFound(action=NotFoundAction.IGNORE)	//an employee may not have a credential user account 
 	private User user;
 	
+	public void copyFrom(Employee employee) {
+		this.setId(employee.getId());
+		this.setFirstName(employee.getFirstName());
+		this.setMiddleName(employee.getMiddleName());
+		this.setLastName(employee.getLastName());
+		this.setBirth_date(employee.getBirth_date());
+		this.setAddresses(employee.getAddresses());
+		this.setEmails(employee.getEmails());
+		this.setPhones(employee.getPhones());
+		this.setHistories(employee.getHistories());
+		this.setFiles(employee.getFiles());
+		this.setGender(employee.getGender());
+		this.setStatus(employee.getStatus());
+                this.setTitle(employee.getTitle());
+	}
+	
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+    
 	public Set<Employee_File> getFiles() {
 		return files;
 	}

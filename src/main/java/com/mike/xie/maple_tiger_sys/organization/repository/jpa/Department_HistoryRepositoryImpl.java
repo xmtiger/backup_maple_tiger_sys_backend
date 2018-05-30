@@ -35,6 +35,9 @@ public class Department_HistoryRepositoryImpl implements Department_HistoryRepos
 
 	@Override
 	public void save(Department_History history) throws DataAccessException {
+		if(history.getId() != null && history.getId() <= 0) {
+			history.setId(null);
+		}
 		if(history.getId() == null){
             this.em.persist(history);
         } else{

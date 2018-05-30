@@ -112,5 +112,17 @@ public class Address extends BaseEntity {
 		this.postcode_zip = postcode_zip;
 	}
 	
-	
+	public void copy(Address address) {
+		if(address != null) {
+			this.address_type = address.address_type;
+			this.street_name = address.street_name;
+			this.street_number = address.street_number;
+			this.apartment_number = address.apartment_number;
+			this.building_number = address.building_number;
+			this.city = address.city;
+			this.country = address.country;
+			this.postcode_zip = address.postcode_zip;
+			this.province_state = address.province_state;			
+		}
+	}
 }
