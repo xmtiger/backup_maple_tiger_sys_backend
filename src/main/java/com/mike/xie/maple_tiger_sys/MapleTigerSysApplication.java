@@ -19,15 +19,15 @@ public class MapleTigerSysApplication {
 		when using the SpringApplicationBuild, it is ok to run hsqldb swing manager, 
 		but the applicationTest has error */
 		
-		SpringApplication.run(MapleTigerSysApplication.class, args);	//for testing and production
+		// SpringApplication.run(MapleTigerSysApplication.class, args);	//for testing and production
 		
 		//for starting up the hsqldb swing manager, while the Application testing can not be passed.
-		/*SpringApplicationBuilder builder = new SpringApplicationBuilder(MapleTigerSysApplication.class);
+		SpringApplicationBuilder builder = new SpringApplicationBuilder(MapleTigerSysApplication.class);
 		builder.headless(false);
-		ConfigurableApplicationContext context = builder.run(args);*/
+		ConfigurableApplicationContext context = builder.run(args);
 	}
 	
-	//@PostConstruct
+	@PostConstruct
 	public void startDbManager() {
 		
 		//hsqldb		
