@@ -174,13 +174,14 @@ CREATE TABLE department_addresses (
 
 CREATE TABLE departments (
 	id							INTEGER IDENTITY PRIMARY KEY,
-	name						VARCHAR(30)
+	name						VARCHAR(30),
+	id_parent					INTEGER DEFAULT NULL
 );
 
-CREATE TABLE department_relationship(
+/*CREATE TABLE department_relationship(
     id_father       INTEGER NOT NULL,
     id_child        INTEGER NOT NULL
-);
+);*/
 
 /*-----------------------------The following tables are for timesheet module---------------------------------------*/
 
@@ -188,13 +189,14 @@ CREATE TABLE projects (
         id          			INTEGER IDENTITY PRIMARY KEY,
         name					VARCHAR(100),
         description				VARCHAR(255),
-        status					VARCHAR(10)
+        status					VARCHAR(10),
+        id_parent				INTEGER DEFAULT NULL
 );
 
-CREATE TABLE project_relationship (
-		id_father	INTEGER NOT NULL,
+/*CREATE TABLE project_relationship (
+		id_parent	INTEGER NOT NULL,
 		id_child	INTEGER NOT NULL
-);
+);*/
 
 CREATE TABLE project_histories (
 	id							INTEGER IDENTITY PRIMARY KEY,
@@ -217,10 +219,11 @@ CREATE TABLE charge_codes (
 	begin_time					DATE,
 	end_time					DATE,
 	
-	description					VARCHAR(255)
+	description					VARCHAR(255),
+	status						VARCHAR(10)
 );
 
-CREATE TABLE timesheets (
+CREATE TABLE timesheet_records (
 	id							INTEGER IDENTITY PRIMARY KEY,
 	owner_id					INTEGER NOT NULL,
 	charge_code_id				INTEGER NOT NULL,
@@ -242,12 +245,11 @@ CREATE TABLE assignments (
 	description					VARCHAR(255)
 );
 
-ALTER TABLE assignments ADD CONSTRAINT fk_employee_assignments FOREIGN KEY (employee_id) REFERENCES employees (id);
-ALTER TABLE assignments ADD CONSTRAINT fk_project_assignments FOREIGN KEY (project_id) REFERENCES projects (id);
 
-ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_father FOREIGN KEY (id_father) REFERENCES departments (id);
+
+/*ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_father FOREIGN KEY (id_father) REFERENCES departments (id);
 ALTER TABLE department_relationship ADD CONSTRAINT fk_dept_child FOREIGN KEY (id_child) REFERENCES departments (id);
-
+*/
 ALTER TABLE employees ADD CONSTRAINT fk_dept_employee FOREIGN KEY (department_id) REFERENCES departments (id); 
 ALTER TABLE employees ADD CONSTRAINT fk_user_employee FOREIGN KEY (user_id) REFERENCES users (id);
 
@@ -264,15 +266,18 @@ ALTER TABLE department_histories ADD CONSTRAINT fk_dept_history FOREIGN KEY (own
 
 /*--------------------------- the following are constraints for timesheet module----------------------------------*/
 
-ALTER TABLE project_relationship ADD CONSTRAINT fk_project_father FOREIGN KEY (id_father) REFERENCES projects (id);
-ALTER TABLE project_relationship ADD CONSTRAINT fk_project_child FOREIGN KEY (id_child) REFERENCES projects (id);
+/*ALTER TABLE project_relationship ADD CONSTRAINT fk_project_father FOREIGN KEY (id_parent) REFERENCES projects (id);
+ALTER TABLE project_relationship ADD CONSTRAINT fk_project_child FOREIGN KEY (id_child) REFERENCES projects (id);*/
 
 ALTER TABLE project_histories ADD CONSTRAINT fk_project_histories FOREIGN KEY (owner_id) REFERENCES projects (id);
 
 ALTER TABLE charge_codes ADD CONSTRAINT fk_charge_codes FOREIGN KEY (project_id) REFERENCES projects (id);
 
-ALTER TABLE timesheets ADD CONSTRAINT fk_owner_timesheets FOREIGN KEY (owner_id) REFERENCES employees (id);
-ALTER TABLE timesheets ADD CONSTRAINT fk_charge_code_timesheets FOREIGN KEY (charge_code_id) REFERENCES charge_codes (id);
+ALTER TABLE assignments ADD CONSTRAINT fk_employee_assignments FOREIGN KEY (employee_id) REFERENCES employees (id);
+ALTER TABLE assignments ADD CONSTRAINT fk_project_assignments FOREIGN KEY (project_id) REFERENCES projects (id);
+
+ALTER TABLE timesheet_records ADD CONSTRAINT fk_owner_timesheets FOREIGN KEY (owner_id) REFERENCES employees (id);
+ALTER TABLE timesheet_records ADD CONSTRAINT fk_charge_code_timesheets FOREIGN KEY (charge_code_id) REFERENCES charge_codes (id);
 
 
 

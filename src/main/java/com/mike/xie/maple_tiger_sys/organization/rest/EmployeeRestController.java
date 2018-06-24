@@ -104,6 +104,25 @@ public class EmployeeRestController {
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 	
+	@RequestMapping(value = "/updateDepartment/id/{employeeId}/departmentId/{departmentId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Employee> updateEmployeeWithNewDepartment(@PathVariable("employeeId") int employeeId,
+			@PathVariable("departmentId") int departmentId) {
+				
+		Employee currentEmployee = this.organizationService.findEmployeeById(employeeId);
+		if(currentEmployee == null) {
+			return new ResponseEntity<Employee>(HttpStatus.NOT_FOUND);
+		}
+		Department department = this.organizationService.findDepartmentById(departmentId);
+		if(department == null) {
+			return new ResponseEntity<Employee>(HttpStatus.BAD_REQUEST);
+		}
+		
+		currentEmployee.setDepartment(department);
+		this.organizationService.saveEmployeeWithNewDepartment(currentEmployee);
+		
+		return new ResponseEntity<Employee>(currentEmployee, HttpStatus.ACCEPTED);
+	}
+	
 	@RequestMapping(value = "/update/id/{employeeId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Employee> updateEmployee(@PathVariable("employeeId") int employeeId, 
 			@RequestBody @Valid Employee employee, BindingResult bindingResult) {
@@ -141,6 +160,22 @@ public class EmployeeRestController {
 		this.organizationService.saveEmployee(currentEmployee);		
 		return new ResponseEntity<Employee>(currentEmployee, HttpStatus.NO_CONTENT);*/
 	}	
+	
+	// the assignment shall be updated with other fields like address, phone, etc.
+	/*@RequestMapping(value = "/assignments/update/id/{employeeId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Employee> updateEmployeeAssignments(@PathVariable("employeeId") int employeeId, 
+			@RequestBody @Valid Employee employee, BindingResult bindingResult) {
+		
+		BindingErrorsResponse errors = new BindingErrorsResponse();
+		HttpHeaders headers = new HttpHeaders();
+		if (bindingResult.hasErrors() || (employee == null)) {
+			errors.addAllErrors(bindingResult);
+			headers.add("errors", errors.toJSON());
+			return new ResponseEntity<Employee>(headers, HttpStatus.BAD_REQUEST);
+		}
+		
+		return this.organizationService.updateEmployeeAssignments(employee, employeeId);
+	}*/
 	
 	// upload employee photoes
     @RequestMapping(value = "/files/upload", method = RequestMethod.POST)

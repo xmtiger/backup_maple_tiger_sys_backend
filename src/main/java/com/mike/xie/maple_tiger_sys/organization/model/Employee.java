@@ -29,8 +29,8 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 	@Column(name = "status")
 	private String status;			//active or retired or laid off, etc..
         
-        @Column(name = "title")
-        private String title;
+    @Column(name = "title")
+    private String title;
 	
 	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id")
@@ -52,6 +52,9 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 	@OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private Set<Employee_File> files;	
 	
+    @OneToMany(mappedBy = "employee", fetch = FetchType.EAGER)
+    private Set<Assignment> assignments;
+    
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "user_id")	// this is the foreign key of the user table, which contains security information
 	@NotFound(action=NotFoundAction.IGNORE)	//an employee may not have a credential user account 
@@ -70,16 +73,29 @@ public class Employee extends Person implements Comparable<Employee>, Familyable
 		this.setFiles(employee.getFiles());
 		this.setGender(employee.getGender());
 		this.setStatus(employee.getStatus());
-                this.setTitle(employee.getTitle());
+        this.setTitle(employee.getTitle());
+        this.setAssignments(employee.getAssignments());        
+        this.setUser(employee.getUser());
 	}
 	
-        public String getTitle() {
-            return title;
-        }
+	
+    public Set<Assignment> getAssignments() {
+		return assignments;
+	}
 
-        public void setTitle(String title) {
-            this.title = title;
-        }
+
+	public void setAssignments(Set<Assignment> assignments) {
+		this.assignments = assignments;
+	}
+
+
+	public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
     
 	public Set<Employee_File> getFiles() {
 		return files;

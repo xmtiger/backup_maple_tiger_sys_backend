@@ -24,7 +24,7 @@ public class NamedFile extends NamedEntity{
 	@Column(name = "upload_time")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    protected Date upload_time;
+    protected Date upload_time = new Date();
 	
 	@Column(name = "description")
 	protected String description;

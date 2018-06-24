@@ -31,7 +31,7 @@ public class Person extends BaseEntity{
     @Column(name = "birth_date")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    protected Date birth_date;
+    protected Date birth_date = new Date();
 
     @Column(name = "gender")
     @Enumerated(EnumType.STRING)

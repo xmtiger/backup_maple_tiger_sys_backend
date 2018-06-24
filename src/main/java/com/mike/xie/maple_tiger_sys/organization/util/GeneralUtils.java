@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 /**
  *
  * @author xmtiger
@@ -34,4 +36,11 @@ public class GeneralUtils {
         
         return date_out;
     }
+    
+    public static String createBcryptPassword(String password) {
+		BCryptPasswordEncoder passwordEncorder = new BCryptPasswordEncoder();
+		String hashedPassword = passwordEncorder.encode(password);
+		
+		return hashedPassword;		
+	}
 }

@@ -2,21 +2,20 @@ INSERT INTO users VALUES (1, 'user01', '$2a$10$ZtmDHUsbVuE0yE8se6.MNe7opzme/1HMP
 INSERT INTO users VALUES (2, 'user02', '$2a$10$wFVdHriJk3bcLSd4vjV5Wux6mMvMiXfY4Ge4ixEQctBO16S5lgp0W', 'helen', 'Leary', 'helen.leary@gmail.com', 1, '2011-03-11');
 INSERT INTO users VALUES (3, 'user03', '$2a$10$6bnBuSr7poS/vKF/aPb3pu8RVXts3H6VvcUwTCCGA0SW5f75.oq8C', 'Linda', 'Douglas', 'linda.douglas@gmail.com', 1, '2012-11-12');
 
-INSERT INTO roles VALUES (1, 'ADMIN');
-INSERT INTO roles VALUES (2, 'USER');
-INSERT INTO roles VALUES (3, 'ACCOUNTANT');
+INSERT INTO roles VALUES (1, 'ROLE_ADMIN');
+INSERT INTO roles VALUES (2, 'ROLE_USER');
+INSERT INTO roles VALUES (3, 'ROLE_ACCOUNTANT');
 
 INSERT INTO user_roles VALUES (1, 1);
 INSERT INTO user_roles VALUES (2, 2);
-INSERT INTO user_roles VALUES (2, 3);
-INSERT INTO user_roles VALUES (3, 2);
+INSERT INTO user_roles VALUES (3, 3);
 
 /*The upper is for initiation of security tables*/
-INSERT INTO departments VALUES (1, 'Management');
-INSERT INTO departments VALUES (2, 'Engineering');
-INSERT INTO departments VALUES (3, 'Accounting');
+INSERT INTO departments VALUES (1, 'Management', NULL);
+INSERT INTO departments VALUES (2, 'Engineering', NULL);
+INSERT INTO departments VALUES (3, 'Accounting', 1);
 
-INSERT INTO department_relationship VALUES (1, 3);
+/*INSERT INTO department_relationship VALUES (1, 3);*/
 
 INSERT INTO department_histories VALUES (1, 1, 'ACTIVE', '2001-09-01', '1900-01-01', '');
 INSERT INTO department_histories VALUES (2, 2, 'ACTIVE', '2003-08-01', '1900-01-01', '');
@@ -62,24 +61,20 @@ INSERT INTO employee_addresses VALUES (3, 3, 'living', 'eastside', '2356', '', '
 
 /* The following initializations are for timesheet module*/
 
-INSERT INTO projects VALUES (1, 'Kitmat Project', 'Moderization of existing Kitmat Aluminum plate', 'Active');
-INSERT INTO projects VALUES (2, 'IOC project', 'expansion of IOC', 'Active');
-INSERT INTO projects VALUES (3, 'IOC project phrase I', 'expansion of ball mill', 'Finished');
-INSERT INTO projects VALUES (4, 'IOC project phrase II', 'new mill', 'suspended');
-INSERT INTO projects VALUES (5, 'IOC project phrase III', 'transportation line upgrade', 'suspended');
+INSERT INTO projects VALUES (1, 'Kitmat Project', 'Moderization of existing Kitmat Aluminum plate', 'Active', NULL);
+INSERT INTO projects VALUES (2, 'IOC project', 'expansion of IOC', 'Active', NULL);
+INSERT INTO projects VALUES (3, 'IOC project phrase I', 'expansion of ball mill', 'Finished', 2);
+INSERT INTO projects VALUES (4, 'IOC project phrase II', 'new mill', 'suspended', 2);
+INSERT INTO projects VALUES (5, 'IOC project phrase III', 'transportation line upgrade', 'suspended', 2);
 
-INSERT INTO project_relationship VALUES (2, 3);
-INSERT INTO project_relationship VALUES (2, 4);
-INSERT INTO project_relationship VALUES (2, 5);
+INSERT INTO charge_codes VALUES (1, 1, '2015K-01256-226', '2010-03-08', '2018-09-26', 'regular charge code', 'Active');
+INSERT INTO charge_codes VALUES (2, 3, '2012I-01256-226', '2012-05-08', '2014-10-19', 'overhead charge code', 'Active');
+INSERT INTO charge_codes VALUES (3, 3, '2012I-01256-226', '2012-05-08', '2014-6-11', 'regular charge code', 'Active');
+INSERT INTO charge_codes VALUES (4, 4, '2013I-01256-227', '2013-06-09', '2015-7-15', 'regular charge code', 'Active');
+INSERT INTO charge_codes VALUES (5, 5, '2014I-01256-228', '2014-07-11', '2016-8-22', 'regular charge code', 'Active');
 
-INSERT INTO charge_codes VALUES (1, 1, '2015K-01256-226', '2010-03-08', '2018-09-26', 'regular charge code');
-INSERT INTO charge_codes VALUES (2, 3, '2012I-01256-226', '2012-05-08', '2014-10-19', 'overhead charge code');
-INSERT INTO charge_codes VALUES (3, 3, '2012I-01256-226', '2012-05-08', '2014-6-11', 'regular charge code');
-INSERT INTO charge_codes VALUES (4, 4, '2013I-01256-227', '2013-06-09', '2015-7-15', 'regular charge code');
-INSERT INTO charge_codes VALUES (5, 5, '2014I-01256-228', '2014-07-11', '2016-8-22', 'regular charge code');
-
-INSERT INTO timesheets VALUES (1, 1, 2, '2018-05-28', 8);
-INSERT INTO timesheets VALUES (2, 1, 2, '2015-05-29', 8);
+INSERT INTO timesheet_records VALUES (1, 1, 2, '2018-05-28', 8);
+INSERT INTO timesheet_records VALUES (2, 1, 2, '2015-05-29', 8);
 
 INSERT INTO assignments VALUES (1, 1, 1, 'project engineer', '2011-05-16', '2013-09-18', 'active', 'engineering coordinator');
 

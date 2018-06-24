@@ -23,12 +23,12 @@ public class History extends BaseEntity {
 	@Column(name = "begin_time")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    protected Date begin_time;
+    protected Date begin_time = new Date();
 	
 	@Column(name = "end_time")
     @Temporal(TemporalType.TIMESTAMP)
     @DateTimeFormat(pattern = "yyyy/MM/dd")
-    protected Date end_time;
+    protected Date end_time = new Date();
 	
 	@Column(name = "description")
 	protected String description;

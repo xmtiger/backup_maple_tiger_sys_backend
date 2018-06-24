@@ -1,6 +1,7 @@
 package com.mike.xie.maple_tiger_sys.security.model;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -21,14 +22,15 @@ import javax.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mike.xie.maple_tiger_sys.model.BaseEntity;
 import com.mike.xie.maple_tiger_sys.security.model.Role;
 
 @Entity
 @Table(name = "users")
-public class User {
-	@Id
+public class User extends BaseEntity {
+	/*@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	protected Integer id;
+	protected Integer id;*/
 	
 	@Column(name = "username", length = 100, unique = true)
 	@NotNull
@@ -55,13 +57,13 @@ public class User {
 	@Column(name = "last_password_reset_date")
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
-	private Date last_password_reset_date;
+	private Date last_password_reset_date = new Date();
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),
 			inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
-
+	
 	public String getUsername() {
 		return username;
 	}
@@ -126,7 +128,20 @@ public class User {
 		this.roles = roles;
 	}
 
-	public Integer getId() {
+	public boolean addRole(Role role) {
+		Iterator<Role> iter_roles = this.roles.iterator();
+		while(iter_roles.hasNext()) {
+			Role curRole = iter_roles.next();
+			
+			if(curRole.getName() == role.getName()) {
+				return false;
+			}
+		}
+		this.roles.add(role);
+		return true;
+	}
+	
+	/*public Integer getId() {
 		return id;
 	}
 	
@@ -137,5 +152,5 @@ public class User {
 	@JsonIgnore
 	public boolean isNew() {
 		return this.id == null;
-	}
+	}*/
 }

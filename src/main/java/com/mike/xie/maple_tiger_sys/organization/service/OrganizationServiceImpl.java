@@ -22,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.mike.xie.maple_tiger_sys.model.BaseEntity;
 import com.mike.xie.maple_tiger_sys.model.NamedFile;
+import com.mike.xie.maple_tiger_sys.organization.model.Assignment;
 import com.mike.xie.maple_tiger_sys.organization.model.Department;
 import com.mike.xie.maple_tiger_sys.organization.model.Department_Address;
 import com.mike.xie.maple_tiger_sys.organization.model.Department_Email;
@@ -33,6 +34,7 @@ import com.mike.xie.maple_tiger_sys.organization.model.Employee_Email;
 import com.mike.xie.maple_tiger_sys.organization.model.Employee_File;
 import com.mike.xie.maple_tiger_sys.organization.model.Employee_History;
 import com.mike.xie.maple_tiger_sys.organization.model.Employee_Phone;
+import com.mike.xie.maple_tiger_sys.organization.model.Project;
 import com.mike.xie.maple_tiger_sys.organization.repository.DepartmentRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Department_AddressRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Department_EmailRepository;
@@ -40,13 +42,19 @@ import com.mike.xie.maple_tiger_sys.organization.repository.Department_HistoryRe
 import com.mike.xie.maple_tiger_sys.organization.repository.Department_PhoneRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.EmployeeRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Employee_AddressRepository;
+import com.mike.xie.maple_tiger_sys.organization.repository.Employee_AssignmentRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Employee_EmailRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Employee_FileRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Employee_HistoryRepository;
 import com.mike.xie.maple_tiger_sys.organization.repository.Employee_PhoneRepository;
+import com.mike.xie.maple_tiger_sys.organization.repository.ProjectRepository;
 import com.mike.xie.maple_tiger_sys.organization.service.file.StorageService;
 import com.mike.xie.maple_tiger_sys.organization.service.file.UploadFileResponse;
 import com.mike.xie.maple_tiger_sys.organization.util.TreeNode;
+import com.mike.xie.maple_tiger_sys.security.model.Role;
+import com.mike.xie.maple_tiger_sys.security.model.User;
+import com.mike.xie.maple_tiger_sys.security.repository.RoleRepository;
+import com.mike.xie.maple_tiger_sys.security.repository.UserRepository;
 
 @Service
 public class OrganizationServiceImpl implements OrganizationService {
@@ -77,12 +85,46 @@ public class OrganizationServiceImpl implements OrganizationService {
 	private Employee_HistoryRepository employeeHistoryRepository;
 	@Autowired
 	private Employee_FileRepository employeeFileRepository;
+	@Autowired
+	private Employee_AssignmentRepository employeeAssignmentRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private ProjectRepository projectRepository;
 	
 	@Autowired
     private StorageService fileStorageService;
 	
 	@Autowired
 	private Environment env;
+	
+	@Override
+	@Transactional
+	public void saveUser(User user) throws DataAccessException {
+		if(user.getId() != null && user.getId() <= 0) {
+			user.setId(null);
+		}
+		
+		if(user.getId() == null) {
+			//save department first, then the id can be made for the realted tables to use as owner_id		
+			userRepository.save(user);
+		}	
+		
+		Set<Role> roles = user.getRoles();
+		Iterator<Role> iter_roles = roles.iterator();
+		while(iter_roles.hasNext()) {
+			Role role = iter_roles.next();
+			roleRepository.save(role);
+		}
+		
+		if(user.getId() != null){
+        	userRepository.save(user);
+        }
+	}
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -122,6 +164,16 @@ public class OrganizationServiceImpl implements OrganizationService {
 	public Collection<Department> findDepartmentByName(String name) throws DataAccessException {
 		return departmentRepository.findDepartmentByName(name);
 	}	
+	
+	@Override
+	@Transactional
+	public boolean saveDepartmentWithNewParent(Department department) throws DataAccessException {
+		if(department.getId() != null && department.getId() > 0){
+        	departmentRepository.save(department);
+        	return true;
+        }
+		return false;		
+	}
 
 	@Override
 	@Transactional
@@ -251,6 +303,14 @@ public class OrganizationServiceImpl implements OrganizationService {
 
 	@Override
 	@Transactional
+	public void saveEmployeeWithNewDepartment(Employee employee) throws DataAccessException {
+		if(employee.getId() != null && employee.getId() > 0){
+            employeeRepository.save(employee);
+        }
+	}
+	
+	@Override
+	@Transactional
 	public void saveEmployee(Employee employee) throws DataAccessException {
 		//save employee first, then the id can be made for the realted tables to use as owner_id
         if(employee.getId() == null || employee.getId() <= 0){
@@ -291,9 +351,24 @@ public class OrganizationServiceImpl implements OrganizationService {
 			}
 		}
                 
-                if(employee.getId() > 0){
-                    employeeRepository.save(employee);
-                }
+        //Then save or update the subordinate assignments
+		Collection<Assignment> assignments = employee.getAssignments();
+		if(assignments != null && employee.getId() > 0) {
+			Iterator<Assignment> iter_assignment = assignments.iterator();
+			while(iter_assignment.hasNext()) {
+				this.employeeAssignmentRepository.save(iter_assignment.next());
+			}
+		}
+		
+		//Then save or update the associated user information
+		User user = employee.getUser();
+		if(user != null && employee.getId() > 0) {
+			this.saveUser(user);
+		}
+                
+        if(employee.getId() > 0){
+            employeeRepository.save(employee);
+        }
 	}
 
 	@Override
@@ -338,24 +413,48 @@ public class OrganizationServiceImpl implements OrganizationService {
 	
 	@Override
 	@Transactional
+	public void deleteEmployeeAssignmentById(int id) throws DataAccessException{
+		this.employeeAssignmentRepository.deleteEmployeeAssignmentById(id);
+	}
+	
+	// the following function is ineffective 
+	@Override
+	@Transactional
+	public ResponseEntity<Employee> updateEmployeeAssignments(Employee employee, int id) throws DataAccessException {
+		Employee currentEmployee = this.findEmployeeById(id);
+		if(currentEmployee == null) {
+			return new ResponseEntity<Employee>(HttpStatus.NOT_FOUND);
+		}
+		
+		this.filterEmployeeInfo(employee.getAssignments(), currentEmployee.getAssignments(), currentEmployee);
+		    
+                
+		this.saveEmployee(currentEmployee);		
+		return new ResponseEntity<Employee>(currentEmployee, HttpStatus.NO_CONTENT);
+	}
+	
+	@Override
+	@Transactional
 	public ResponseEntity<Employee> updateEmployee(Employee employee, int id) throws DataAccessException {
 		Employee currentEmployee = this.findEmployeeById(id);
 		if(currentEmployee == null) {
 			return new ResponseEntity<Employee>(HttpStatus.NOT_FOUND);
 		}
-				
+		currentEmployee.setTitle(employee.getTitle());
 		currentEmployee.setFirstName(employee.getFirstName());
 		currentEmployee.setMiddleName(employee.getMiddleName());
 		currentEmployee.setLastName(employee.getLastName());
 		currentEmployee.setBirth_date(employee.getBirth_date());
 		currentEmployee.setGender(employee.getGender());
 		currentEmployee.setStatus(employee.getStatus());
+        currentEmployee.setUser(employee.getUser());
 		
 		this.filterEmployeeInfo(employee.getAddresses(), currentEmployee.getAddresses(), currentEmployee);
 		this.filterEmployeeInfo(employee.getEmails(), currentEmployee.getEmails(), currentEmployee);
 		this.filterEmployeeInfo(employee.getHistories(), currentEmployee.getHistories(), currentEmployee);
 		this.filterEmployeeInfo(employee.getPhones(), currentEmployee.getPhones(), currentEmployee);
 		this.filterEmployeeInfo(employee.getFiles(), currentEmployee.getFiles(), currentEmployee);
+        this.filterEmployeeInfo(employee.getAssignments(), currentEmployee.getAssignments(), currentEmployee);
 		
 		this.saveEmployee(currentEmployee);		
 		return new ResponseEntity<Employee>(currentEmployee, HttpStatus.NO_CONTENT);
@@ -367,7 +466,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 		Iterator<? extends BaseEntity> iter_currentItems = setFromServer.iterator();
         boolean ifExistingItemsEmpty = true;
 		while(iter_currentItems.hasNext()) {
-                        ifExistingItemsEmpty = false;
+            ifExistingItemsEmpty = false;
 			BaseEntity currentItem = iter_currentItems.next();
 						
 			Iterator<? extends BaseEntity> iter_items = setFromClient.iterator();
@@ -387,6 +486,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 						((Employee_History)itemToBeUpdatedOrAdded).setOwner(currentEmployee);
 					} else if (itemToBeUpdatedOrAdded instanceof Employee_File) {
 						((Employee_File)itemToBeUpdatedOrAdded).setOwner(currentEmployee);
+					} else if (itemToBeUpdatedOrAdded instanceof Assignment) {
+						((Assignment)itemToBeUpdatedOrAdded).setEmployee(currentEmployee);
 					}
 					              
 					ifDeleted = false;
@@ -403,6 +504,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 						((Employee_History)currentItem).copy((Employee_History)itemToBeUpdatedOrAdded);
 					} else if (itemToBeUpdatedOrAdded instanceof Employee_File) {
 						((Employee_File)currentItem).copy((Employee_File)itemToBeUpdatedOrAdded);
+					} else if (itemToBeUpdatedOrAdded instanceof Assignment) {
+						((Assignment)currentItem).copy((Assignment)itemToBeUpdatedOrAdded);
 					}
 					
 					ifDeleted = false;
@@ -428,7 +531,9 @@ public class OrganizationServiceImpl implements OrganizationService {
                     ((Employee_History)itemToBeAdded).setOwner(currentEmployee);
                 } else if ((itemToBeAdded) instanceof Employee_File) {
                 	((Employee_File)itemToBeAdded).setOwner(currentEmployee);
-                }
+                } else if (itemToBeAdded instanceof Assignment) {
+					((Assignment)itemToBeAdded).setEmployee(currentEmployee);
+				}
             }
         } else{
                     
@@ -448,6 +553,8 @@ public class OrganizationServiceImpl implements OrganizationService {
                     this.deleteEmployeeHistoryById(itemToBeDeleted.getId());
                 } else if (itemToBeDeleted instanceof Employee_File) {
                 	this.deleteEmployeeFileById(itemToBeDeleted.getId());
+                } else if (itemToBeDeleted instanceof Assignment) {
+                	this.deleteEmployeeAssignmentById(itemToBeDeleted.getId());
                 }
 
             }
@@ -604,5 +711,11 @@ public class OrganizationServiceImpl implements OrganizationService {
     	this.fileStorageService.deleteFile(filename);
     	
     	return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<Project> findAllProjects() throws DataAccessException {
+		return projectRepository.findAllProjects();
 	}
 }

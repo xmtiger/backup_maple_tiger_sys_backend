@@ -18,6 +18,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mike.xie.maple_tiger_sys.model.Familyable;
 
 import com.mike.xie.maple_tiger_sys.model.NamedEntity;
+import javax.persistence.Column;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 @Entity
 @Table(name = "departments")
@@ -41,15 +44,16 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     private Set<Department_File> files;*/
     
   //The following fields are for department relationship
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinTable(name = "department_relationship", joinColumns = @JoinColumn(name = "id_child"),
-            inverseJoinColumns = @JoinColumn(name = "id_father"))
+    @ManyToOne
+    @JoinColumn(name = "id_parent")
+    /*@JoinTable(name = "department_relationship", joinColumns = @JoinColumn(name = "id_child"),
+            inverseJoinColumns = @JoinColumn(name = "id_father"))*/
     @JsonIgnore //to avoid infinite recursive definition actions.
     private Department father;
     
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "department_relationship", joinColumns = @JoinColumn(name = "id_father"),
-            inverseJoinColumns = @JoinColumn(name = "id_child"))    
+    @OneToMany(mappedBy = "father",fetch = FetchType.EAGER)
+    /*@JoinTable(name = "department_relationship", joinColumns = @JoinColumn(name = "id_father"),
+            inverseJoinColumns = @JoinColumn(name = "id_child"))*/    
     private Set<Department> children;
     
   //mappedBy means the class field name of the class 'Employee'
@@ -214,7 +218,16 @@ public class Department extends NamedEntity implements Comparable<Department>, F
     }
 
     public void setFather(Department father) {
+    	if(this.father != null) {
+    		this.father.children.remove(this);
+    	}
+    	
         this.father = father;
+        if(father != null) {
+        	if(!father.getChildren().contains(this)) {
+        		father.children.add(this);
+        	}        	
+        }
     }
 
     public Set<Department> getChildren() {

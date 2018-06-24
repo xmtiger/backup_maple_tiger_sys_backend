@@ -137,6 +137,30 @@ public class DepartmentRestController {
 		return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 	}
 	
+	@RequestMapping(value = "/updateParent/id/{departmentId}/parentId/{parentDeptId}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public ResponseEntity<Department> updateDepartmentParent(@PathVariable("departmentId") int departmentId,
+			@PathVariable("parentDeptId") int parentDeptId) {
+		
+		Department currentDepartment = this.organizationService.findDepartmentById(departmentId);
+		if(currentDepartment == null) {
+			return new ResponseEntity<Department>(HttpStatus.NOT_FOUND);
+		}
+		if(parentDeptId > 0) {
+			Department parentDepartment = this.organizationService.findDepartmentById(parentDeptId);
+			currentDepartment.setFather(parentDepartment);
+		} else {
+			currentDepartment.setFather(null);
+		}	
+		
+		boolean rs = this.organizationService.saveDepartmentWithNewParent(currentDepartment);
+		if(rs == true) {
+			return new ResponseEntity<Department>(currentDepartment, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Department>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
 	@RequestMapping(value = "/update/id/{departmentId}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<Department> updateDepartment(@PathVariable("departmentId") int departmentId, 
 			@RequestBody @Valid Department department, BindingResult bindingResult) {

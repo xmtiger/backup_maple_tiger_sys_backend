@@ -28,7 +28,7 @@ public class CustomUserFactory {
 	
 	private static Set<GrantedAuthority> mapToGrantedAuthorities(Set<Role> authorities) {
 		return authorities.stream()
-				.map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName())).collect(Collectors.toSet());
+				.map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toSet());
 				
 	}
 	
